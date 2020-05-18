@@ -19,11 +19,11 @@ ano_ini <- 2017
 ano_fim <- 2020
 
 # informar número de lattes específico para extrato individual ou NULL para todos os extratos
-#id_especifico <- "5035568092503034"
-id_especifico <- NULL 
+id_especifico <- "5035568092503034"
+# id_especifico <- NULL 
 
 # mostrar classificação geral
-fl_classificacao <- FALSE
+fl_classificacao <- TRUE
 
 # INSTITUICAO
 # incluir dentro de c() os possíveis nomes da instituição, separados por vírgula
@@ -337,8 +337,9 @@ n_docentes <- nrow(clattes)
 
 # Artigos em periódicos com estrato na área
 df <- producao_artigos %>% 
-              select(id, nome, estrato_cp) %>% 
-              filter(estrato_cp != '--' & estrato_cp != '') %>% 
+              select(id, nome, estrato_cp, ano) %>% 
+              filter(estrato_cp != '--' & estrato_cp != '' & 
+                       (ano %in% (ano_ini:ano_fim))) %>% 
               group_by(id, nome, estrato_cp) %>% 
               summarise(n = n()) %>%
               arrange(id, as.character(estrato_cp))
@@ -346,43 +347,63 @@ df <- producao_artigos %>%
 df$estrato_cp <- as.factor(str_trim(df$estrato_cp))
 estratos <- as.character(levels(df$estrato_cp))
 
-df2 <- cbind(clattes[, c("id","nome")], matrix(0, nrow(clattes), length(estratos)))
-names(df2) <- c("id","nome", estratos)
-
-for(id in df2$id){ # inclui contagem na tabela cruzada
- df2[df2$id == id, as.character(df[df$id == id, ]$estrato_cp)] <- df[df$id == id, ]$n
-}
-
-df2 <- df2[order(df2$nome), 2:ncol(df2)] # ordena por nome
-
-if(!is.null(id_especifico)){
-  df2$nome[df2$nome != df_lattes$nome[vfor]] <- "XXXXXXXXXX"
-}
-
-df2 <- rbind(df2, c(0, colSums(df2[ , 2:ncol(df2)]))) # inclui linha para o somatório de artigos por estrato
-df2 <- rbind(df2, c(0, colSums(df2[ , 2:ncol(df2)]) * pontos_artigo(estratos)) / 2) # inclui linha com a pontuação
-
-df2 <- cbind(df2, rowSums(df2[ , 2:ncol(df2)])) # inclui coluna para o somatório de artigos por nome
-names(df2)[ncol(df2)] <- "TOTAL"
-
-df2[nrow(df2) - 1, 1] <- "QTD. ARTIGOS"
-df2[nrow(df2), 1] <- "PONTUAÇÂO"
-
-indicadores <- data.frame(indicador = "Índice de Produção de Artigos", 
-                          valor = df2[nrow(df2), ncol(df2)]/n_docentes)
-if("A1" %in% estratos){
+# se houver publicacao com estrato na area
+if(length(estratos) > 0){
+  
+  df2 <- cbind(clattes[, c("id","nome")], matrix(0, nrow(clattes), length(estratos)))
+  names(df2) <- c("id","nome", estratos)
+  
+  for(id in df2$id){ # inclui contagem na tabela cruzada
+      df2[df2$id == id, as.character(df[df$id == id, ]$estrato_cp)] <- df[df$id == id, ]$n
+  }
+  
+  df2 <- df2[order(df2$nome), 2:ncol(df2)] # ordena por nome
+  
+  if(!is.null(id_especifico)){
+    df2$nome[df2$nome != df_lattes$nome[vfor]] <- "XXXXXXXXXX"
+  }
+  
+  # inclui linha para o somatório de artigos por estrato
+  df2 <- rbind(df2, c(0, colSums(cbind(df2[ , 2:ncol(df2)],0))))
+  
+  # inclui linha com a pontuação
+  df2 <- rbind(df2, c(0, colSums(cbind(df2[ , 2:ncol(df2)]),0) * pontos_artigo(estratos)) / 2) 
+  
+  # inclui coluna para o somatório de artigos por nome
+  df2 <- cbind(df2, rowSums(cbind(df2[ , 2:ncol(df2)],0))) 
+  names(df2)[ncol(df2)] <- "TOTAL"
+  
+  df2[nrow(df2) - 1, 1] <- "QTD. ARTIGOS"
+  df2[nrow(df2), 1] <- "PONTUAÇÂO"
+  
+  indicadores <- data.frame(indicador = "Índice de Produção de Artigos", 
+                            valor = df2[nrow(df2), ncol(df2)]/n_docentes)
+  if("A1" %in% estratos){
+    indicadores <- rbind(indicadores,
+                         data.frame(indicador = "Índice de Produção Super Qualificada", 
+                                    valor = df2[nrow(df2),2]/n_docentes) )
+  }
+  
+} else {
+  df2 <- data.frame(nome="----------", TOTAL=0)
+  df2 <- rbind(df2, data.frame(nome="QTD. ARTIGOS", TOTAL=0))
+  df2 <- rbind(df2, data.frame(nome="PONTUAÇÃO", TOTAL=0))
+  
+  indicadores <- data.frame(indicador = "Índice de Produção de Artigos", valor = 0)
   indicadores <- rbind(indicadores,
                        data.frame(indicador = "Índice de Produção Super Qualificada", 
-                                  valor = df2[nrow(df2),2]/n_docentes) )
+                                  valor = 0 ))
 }
-
+  
 kable(df2, caption = paste0("Artigos em periódicos com estrato em ",str_to_title(nome_area)), format = "pandoc", row.names = FALSE)
+
 
 
 # Artigos em periódicos: maior estrato
 df <- producao_artigos %>% 
-              select(id, nome, maior_estrato) %>% 
-              filter(maior_estrato != '--' & maior_estrato != '') %>% 
+              select(id, nome, maior_estrato, ano) %>% 
+              filter(maior_estrato != '--' & maior_estrato != '' & 
+                       (ano %in% (ano_ini:ano_fim))) %>% 
               group_by(id, nome, maior_estrato) %>% 
               summarise(n = n()) %>%
               arrange(id, as.character(maior_estrato))
@@ -390,25 +411,36 @@ df <- producao_artigos %>%
 df$maior_estrato <- as.factor(str_trim(df$maior_estrato))
 estratos <- as.character(levels(df$maior_estrato))
 
-df2 <- cbind(clattes[, c("id","nome")], matrix(0, nrow(clattes), length(estratos)))
-names(df2) <- c("id","nome", estratos)
+# se houver alguma publicacao com estrato qualis
+if(length(estratos) > 0){
+  
+  df2 <- cbind(clattes[, c("id","nome")], matrix(0, nrow(clattes), length(estratos)))
+  names(df2) <- c("id","nome", estratos)
+  
+  for(id in df2$id){ # inclui contagem na tabela cruzada
+    df2[df2$id == id, as.character(df[df$id == id, ]$maior_estrato)] <- df[df$id == id, ]$n
+  }
+  
+  df2 <- df2[order(df2$nome), 2:ncol(df2)] # ordena por nome
+  
+  if(!is.null(id_especifico)){
+    df2$nome[df2$nome != df_lattes$nome[vfor]] <- "XXXXXXXXXX"
+  }
+  
+  # inclui linha para o somatório de artigos por estrato
+  df2 <- rbind(df2, c(0, colSums(cbind(df2[ , 2:ncol(df2)],0)))) 
+  
+  # inclui coluna para o somatório de artigos por nome
+  df2 <- cbind(df2, rowSums(cbind(df2[ , 2:ncol(df2)],0))) 
+  names(df2)[ncol(df2)] <- "TOTAL"
+  
+  df2[nrow(df2), 1] <- "QTD. ARTIGOS"
 
-for(id in df2$id){ # inclui contagem na tabela cruzada
-  df2[df2$id == id, as.character(df[df$id == id, ]$maior_estrato)] <- df[df$id == id, ]$n
+} else {
+  df2 <- data.frame(nome="----------", TOTAL=0)
+  df2 <- rbind(df2, data.frame(nome="QTD. ARTIGOS", TOTAL=0))
+  df2 <- rbind(df2, data.frame(nome="PONTUAÇÃO", TOTAL=0))
 }
-
-df2 <- df2[order(df2$nome), 2:ncol(df2)] # ordena por nome
-
-if(!is.null(id_especifico)){
-  df2$nome[df2$nome != df_lattes$nome[vfor]] <- "XXXXXXXXXX"
-}
-
-df2 <- rbind(df2, c(0, colSums(df2[ , 2:ncol(df2)]))) # inclui linha para o somatório de artigos por estrato
-
-df2 <- cbind(df2, rowSums(df2[ , 2:ncol(df2)])) # inclui coluna para o somatório de artigos por nome
-names(df2)[ncol(df2)] <- "TOTAL"
-
-df2[nrow(df2), 1] <- "QTD. ARTIGOS"
 
 kable(df2, caption = "Artigos em periódicos: MAIOR ESTRATO", format = "pandoc", row.names = FALSE)
 
@@ -416,99 +448,127 @@ kable(df2, caption = "Artigos em periódicos: MAIOR ESTRATO", format = "pandoc",
 
 # Quantidade de livros
 df <- producao_livros %>% 
-              select(id, nome, tipo) %>% 
-              filter(tipo != '') %>% 
+              select(id, nome, tipo, ano) %>% 
+              filter(tipo != '' & (ano %in% (ano_ini:ano_fim))) %>% 
               group_by(id, nome, tipo) %>% 
               summarise(n = n()) %>%
               arrange(id, as.character(tipo))
 
 tipos <- as.character(levels(as.factor(as.character(df$tipo))))
 
-df2 <- cbind(clattes[, c("id","nome")], matrix(0, nrow(clattes), length(tipos)))
-names(df2) <- c("id","nome", tipos)
+# se houver alguma publicacao de livro
+if(length(tipos)){
+  
+  df2 <- cbind(clattes[, c("id","nome")], matrix(0, nrow(clattes), length(tipos)))
+  names(df2) <- c("id","nome", tipos)
+  
+  for(id in df2$id){ # inclui contagem na tabela cruzada
+    df2[df2$id == id, as.character(df[df$id == id, ]$tipo)] <- df[df$id == id, ]$n
+  }
+  
+  df2 <- df2[order(df2$nome), 2:ncol(df2)] # ordena por nome
+  
+  if(!is.null(id_especifico)){
+    df2$nome[df2$nome != df_lattes$nome[vfor]] <- "XXXXXXXXXX"
+  }
+  
+  # inclui linha para o somatório de livros por tipo
+  df2 <- rbind(df2, c(0, colSums(cbind(df2[ , 2:ncol(df2)],0)))) 
+  
+  # inclui coluna para o somatório de livros por nome
+  df2 <- cbind(df2, rowSums(cbind(df2[ , 2:ncol(df2)],0))) 
+  names(df2)[ncol(df2)] <- "TOTAL"
+  
+  df2[nrow(df2), 1] <- "QTD. LIVROS"
+  
 
-for(id in df2$id){ # inclui contagem na tabela cruzada
-  df2[df2$id == id, as.character(df[df$id == id, ]$tipo)] <- df[df$id == id, ]$n
+  indicadores <- rbind(indicadores,
+                       data.frame(indicador = "Indicador de Produção de Livros", 
+                              valor = (sum(df2$LIVRO_PUBLICADO) +
+                                       sum(df2$LIVRO_ORGANIZADO_OU_EDICAO))/n_docentes/2)
+                       )
+  
+  indicadores <- rbind(indicadores,
+                       data.frame(indicador = "Indicador de Produção de Capítulos de Livros", 
+                                  valor = sum(df2$`Capitulo de livro publicado`)/n_docentes/2) )
+
+} else {
+  df2 <- data.frame(nome="----------", TOTAL=0)
+  df2 <- rbind(df2, data.frame(nome="QTD. LIVROS", TOTAL=0))
+
+  indicadores <- data.frame(indicador = "Indicador de Produção de Livros", valor = 0)
+  indicadores <- rbind(indicadores,
+                       data.frame(indicador = "Indicador de Produção de Capítulos de Livros", 
+                                  valor = 0 ))
 }
-
-df2 <- df2[order(df2$nome), 2:ncol(df2)] # ordena por nome
-
-if(!is.null(id_especifico)){
-  df2$nome[df2$nome != df_lattes$nome[vfor]] <- "XXXXXXXXXX"
-}
-
-df2 <- rbind(df2, c(0, colSums(df2[ , 2:ncol(df2)]))) # inclui linha para o somatório de livros por tipo
-
-df2 <- cbind(df2, rowSums(df2[ , 2:ncol(df2)])) # inclui coluna para o somatório de livros por nome
-names(df2)[ncol(df2)] <- "TOTAL"
-
-df2[nrow(df2), 1] <- "QTD. LIVROS"
 
 kable(df2, caption = "Livros publicados", format = "pandoc", row.names = FALSE)
 
 
-indicadores <- rbind(indicadores,
-                     data.frame(indicador = "Indicador de Produção de Livros", 
-                            valor = (sum(df2$LIVRO_PUBLICADO) + sum(df2$LIVRO_ORGANIZADO_OU_EDICAO))/n_docentes/2)
-                     )
-
-indicadores <- rbind(indicadores,
-                     data.frame(indicador = "Indicador de Produção de Capítulos de Livros", 
-                                valor = sum(df2$`Capitulo de livro publicado`)/n_docentes/2) )
-
-
-
 # Produção técnica
 df <- producao_tecnica %>% 
-              select(id, estrato) %>% 
-              filter(estrato != 'TOTAL') %>% 
+              select(id, estrato, ano) %>% 
+              filter(estrato != 'TOTAL' & 
+                       (ano %in% (ano_ini:ano_fim))) %>% 
               group_by(id, estrato) %>% 
               summarise(n = n()) %>%
               arrange(id, as.character(estrato))
 
 estratos <- sort(as.character(levels(as.factor(as.character(df$estrato)))), decreasing = TRUE)
 
-df2 <- cbind(clattes[, c("id","nome")], matrix(0, nrow(clattes), length(estratos)))
-names(df2) <- c("id","nome", estratos)
+# se houver alguma producao tecnica com estrato
+if(length(estratos) > 0){
+  
+  df2 <- cbind(clattes[, c("id","nome")], matrix(0, nrow(clattes), length(estratos)))
+  names(df2) <- c("id","nome", estratos)
+  
+  for(id in df2$id){ # inclui contagem na tabela cruzada
+    df2[df2$id == id, as.character(df[df$id == id, ]$estrato)] <- df[df$id == id, ]$n
+  }
+  
+  df2 <- df2[order(df2$nome), 2:ncol(df2)] # ordena por nome
+  
+  if(!is.null(id_especifico)){
+    df2$nome[df2$nome != df_lattes$nome[vfor]] <- "XXXXXXXXXX"
+  }
+  
+  # inclui linha para o somatório de prod. ténica por estrato
+  df2 <- rbind(df2, c(0, colSums(cbind(df2[ , 2:ncol(df2)],0)))) 
+  
+  # inclui linha com a pontuação
+  df2 <- rbind(df2, round(c(0, colSums(cbind(df2[ , 2:ncol(df2)]),0) * pontos_tec(0, estratos) / 2), 0) ) 
+  
+  # inclui coluna para o somatorio de p. tecnica por nome
+  df2 <- cbind(df2, rowSums(cbind(df2[ , 2:ncol(df2)],0)))
+  names(df2)[ncol(df2)] <- "TOTAL"
+  
+  df2[nrow(df2) - 1, 1] <- "QTD. PROD. TEC."
+  df2[nrow(df2), 1] <- "PONTUAÇÂO"
+  
+  indicadores <- rbind(indicadores,
+                       data.frame(indicador = "Indicador de Produção Técnica", 
+                                  valor = df2[nrow(df2) - 1, ncol(df2)]/n_docentes) )
 
-for(id in df2$id){ # inclui contagem na tabela cruzada
-  df2[df2$id == id, as.character(df[df$id == id, ]$estrato)] <- df[df$id == id, ]$n
+} else {
+  df2 <- data.frame(nome="----------", TOTAL=0)
+  df2 <- rbind(df2, data.frame(nome="QTD. PROD. TEC.", TOTAL=0))
+  df2 <- rbind(df2, data.frame(nome="PONTUAÇÃO", TOTAL=0))
+
+  indicadores <- data.frame(indicador = "Indicador de Produção Técnica", valor = 0)
 }
-
-df2 <- df2[order(df2$nome), 2:ncol(df2)] # ordena por nome
-
-if(!is.null(id_especifico)){
-  df2$nome[df2$nome != df_lattes$nome[vfor]] <- "XXXXXXXXXX"
-}
-
-df2 <- rbind(df2, c(0, colSums(df2[ , 2:ncol(df2)]))) # inclui linha para o somatório de prod. ténica por estrato
-
-df2 <- rbind(df2, round(c(0, colSums(df2[ , 2:ncol(df2)]) * pontos_tec(0, estratos) / 2), 0) ) # inclui linha com a pontuação
-
-df2 <- cbind(df2, rowSums(df2[ , 2:ncol(df2)])) # inclui coluna para o somatório de p. técnica por nome
-names(df2)[ncol(df2)] <- "TOTAL"
-
-df2[nrow(df2) - 1, 1] <- "QTD. PROD. TEC."
-df2[nrow(df2), 1] <- "PONTUAÇÂO"
-
-indicadores <- rbind(indicadores,
-                     data.frame(indicador = "Indicador de Produção Técnica", 
-                                valor = df2[nrow(df2) - 1, ncol(df2)]/n_docentes) )
 
 kable(df2, caption = "Produção Técnica", format = "pandoc", row.names = FALSE)
 
 
-
-
 # Produção de teses e dissertações
 df <- producao_orientacoes %>% 
-              select(tipo, nivel, situacao) %>% 
+              select(tipo, nivel, situacao, ano) %>% 
               filter(tipo %in% c('orientador principal',''), 
-                     nivel %in% c('dissertacao de mestrado', 'tese de doutorado', 'supervisao de pos-doutorado')) %>%
+                     nivel %in% c('dissertacao de mestrado', 'tese de doutorado', 'supervisao de pos-doutorado') & 
+                     (ano %in% (ano_ini:ano_fim))) %>%
               group_by(tipo, nivel, situacao) %>% 
               summarise(n = n())
 
-kable(df, caption = "Orientações como principal", format = "pandoc", row.names = FALSE)
 
 indicadores <- rbind(indicadores,
                      data.frame(indicador = "Indicador de Produção de Dissertações de Mestrado", 
@@ -521,13 +581,15 @@ indicadores <- rbind(indicadores,
                                                df$situacao == "concluida", "n"]), na.rm = TRUE)/n_docentes) )
 
 
+kable(df, caption = "Orientações como principal", format = "pandoc", row.names = FALSE)
 
 
-# Docentes com orientação como principal
+# Docentes com orientacao como principal
 df <- producao_orientacoes %>% 
-              select(id, tipo, nivel, situacao) %>% 
+              select(id, tipo, nivel, situacao, ano) %>% 
               filter(tipo %in% c('orientador principal'), 
-                     nivel %in% c('dissertacao de mestrado', 'tese de doutorado')) %>%
+                     nivel %in% c('dissertacao de mestrado', 'tese de doutorado') & 
+                     (ano %in% (ano_ini:ano_fim))) %>%
               group_by(id, tipo, nivel, situacao) %>% 
               summarise(n = n()) %>%
               select(id, n) %>% 
@@ -544,6 +606,7 @@ if(!is.null(id_especifico)){
 df <- rbind(df, data.frame(nome = "TOTAL", total = sum(df$total)))
 
 kable(df, caption = paste0("Atuação como orientador principal = ", nrow(df)-1), format = "pandoc", row.names = FALSE)
+
 
 # Projetos de pesquisa
 df <- producao_projetos %>% 
