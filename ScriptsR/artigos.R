@@ -19,7 +19,7 @@ artigos <- function(id, xml_data,
       if((ano >= ano_ini & ano <= ano_fim) | fl_rlvnc == "SIM"){
         # identifica o periodico e recupera o estrato qualis para CP
         issn <- xml_data$"PRODUCAO-BIBLIOGRAFICA"$"ARTIGOS-PUBLICADOS"[[i]]$"DETALHAMENTO-DO-ARTIGO"["ISSN"]
-        # verifica o estrato na ?rea especificada em no par?metro nome_area
+        # verifica o estrato na area especificada em no parametro nome_area
         eqcp <- as.character(qualis[(qualis$Area %in% nome_area ) & (qualis$ISSN == issn), "Estrato"][1])
         if(is.na(eqcp)) { eqcp = "--" }
         # verifica o estrato mais alto do periodico
@@ -47,6 +47,11 @@ artigos <- function(id, xml_data,
         meio <- sub("_", " ", meio)
         periodico <- xml_data$"PRODUCAO-BIBLIOGRAFICA"$"ARTIGOS-PUBLICADOS"[[i]]$"DETALHAMENTO-DO-ARTIGO"["TITULO-DO-PERIODICO-OU-REVISTA"] 
         
+        pontos <- pontos_artigo(eqcp)
+        if(!(ano >= ano_ini & ano <= ano_fim)){
+          pontos <- 0
+        }
+
         ap <- data.frame(
           id = id,
           nome = nome,
@@ -58,7 +63,7 @@ artigos <- function(id, xml_data,
           estrato_cp = eqcp,
           maior_estrato = eq,
           areas = areas,
-          pontos = pontos_artigo(eqcp),
+          pontos = pontos,
           flag_relevancia = fl_rlvnc
         )
         

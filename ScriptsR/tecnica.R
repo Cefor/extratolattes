@@ -353,6 +353,41 @@ tecnica <- function(id, xml_data,
     }
   }
   
+  # para todos os itens em
+  # PROCESSOS-OU-TECNICAS
+  for(i in (1:length(ptec))[names(ptec) == "PROCESSOS-OU-TECNICAS"]){
+    
+    ano <- as.numeric(ptec[[i]]$"DADOS-BASICOS-DO-PROCESSOS-OU-TECNICAS"["ANO"])
+    
+    # flag relevancia
+    fl_rlvnc <- ptec[[i]]$"DADOS-BASICOS-DO-PROCESSOS-OU-TECNICAS"['FLAG-RELEVANCIA']
+    
+    if((ano >= ano_ini & ano <= ano_fim) | fl_rlvnc=="SIM"){
+      
+      titulo <- as.vector(ptec[[i]]$"DADOS-BASICOS-DO-PROCESSOS-OU-TECNICAS"["TITULO-DO-PROCESSO"])
+      
+      tipo <- str_to_lower(paste0("Processo ou tecnica - ",
+                     ptec[[i]]$"DADOS-BASICOS-DO-PROCESSOS-OU-TECNICAS"["NATUREZA"]))
+      
+      pontos <- pontos_tec(14)
+      if(!(ano >= ano_ini & ano <= ano_fim)){
+        pontos[[2]] <- 0
+      }
+      
+      ap <- data.frame(
+        id = id,
+        ano = ano,
+        titulo = titulo,
+        tipo = tipo,
+        estrato = pontos[[1]],
+        pontos = pontos[[2]],
+        flag_relevancia = fl_rlvnc
+      )
+      
+      producao_tec <- rbind(producao_tec, ap, row.names = NULL)
+    }
+  }
+  
   
   ptec <- xml_data$"PRODUCAO-BIBLIOGRAFICA"$"TEXTOS-EM-JORNAIS-OU-REVISTAS"
   # para todos os itens em
@@ -397,8 +432,7 @@ tecnica <- function(id, xml_data,
     }
   }
   
-  
-  
+
   ptec <- xml_data$"PRODUCAO-BIBLIOGRAFICA"$"DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA"
   # para todos os itens em
   # PREFACIO-POSFACIO
@@ -519,6 +553,10 @@ tecnica <- function(id, xml_data,
       }
     }
   }
+  
+  
+
+  
   
   
   #####################################

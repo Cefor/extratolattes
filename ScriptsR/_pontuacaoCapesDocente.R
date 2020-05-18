@@ -2,7 +2,7 @@
 # PONTUACAO CAPES - DOCENTE
 #############################################
 
-# criterios de pontua??o para artigos
+# criterios de pontuacao para artigos
 pontos_artigo <- function(eq){ # eq: estrato qualis
   
   # valor <- c(100, 85, 70, 55, 25, 20, 10, 5, 0, 0, 0, 0) # novo qualis
@@ -345,5 +345,8 @@ pontos_tec <- function(item, param = NULL){
     if(param != "Ouvinte"){
       list("T1", as.numeric(valor["T1"]))
     } else list("--", as.numeric(valor["--"]))
+  } else if(item == 14){
+    # 14 - processos ou tecnicas
+    list("T4", as.numeric(valor["T4"]))
   }
 }

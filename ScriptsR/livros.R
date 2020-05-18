@@ -35,6 +35,9 @@ livros <- function(id, xml_data, qualis, ano_ini, ano_fim,
         # pontos <- 0
         
         pontos <- pontos_livro(eqcp, tipo)
+        if(!(ano >= ano_ini & ano <= ano_fim)){
+          pontos <- 0
+        }
         
         ap <- data.frame(
           id = id,
@@ -56,7 +59,7 @@ livros <- function(id, xml_data, qualis, ano_ini, ano_fim,
     }
   }
   
-  # CAP?TULOS
+  # CAPITULOS
   n <- length(xml_data$"PRODUCAO-BIBLIOGRAFICA"$"LIVROS-E-CAPITULOS"$"CAPITULOS-DE-LIVROS-PUBLICADOS")
   if(n > 0){
     for(i in 1:n){
@@ -87,6 +90,9 @@ livros <- function(id, xml_data, qualis, ano_ini, ano_fim,
         # pontos <- 0
         
         pontos <- pontos_livro(eqcp, tipo)
+        if(!(ano >= ano_ini & ano <= ano_fim)){
+          pontos <- 0
+        }
         
         ap <- data.frame(
           id = id,
