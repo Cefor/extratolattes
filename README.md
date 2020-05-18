@@ -1,4 +1,4 @@
-﻿## EXTRATO LATTES
+## EXTRATO LATTES
 
 ### Autor: Fabiano Peruzzo Schwartz
 
@@ -24,6 +24,8 @@ http://lattes.cnpq.br/5035568092503034, pode-se baixar a versão XML do respecti
 **QualisLivros_Capes2013_2016.csv**: arquivo com a qualificação da Capes para os livros de Ciência Política e Relações Internacionais; para a geração de extrato de outras áreas, esse arquivo deve ser substituído pelo da área correspondente, mantendo-se a mesma estrutura (título da obra, isbn, qualis). 
 
 **QualisPeriodicos_Capes2013_2016.csv**: arquivo com a qualificação da Capes para os periódicos de todas as áreas.
+
+**Qualis 2019.csv**: arquivo **não oficial** com proposta de qualificação da Capes para os periódicos de todas as áreas, com possibilidade de ser usado na avaliação quadrienal 2017-2020.
 
 ## Exemplo
 
