@@ -8,7 +8,7 @@ O presente repositório se destina ao compartilhamento de scripts escritos na li
 
 O principal objetivo é acompanhar, de forma sistemática, a atuação de docentes em cursos de pós-graduação *stricto sensu* por meio da geração periódica de extratos. Dessa forma, pretende-se atrair a atenção para os principais pontos da avaliação da Capes, a fim de que a devida atualização do Lattes e ações corretivas possam acontecer em tempo. Essa prática pode contornar situações em que, por exemplo, um professor não venha a pontuar na avaliação do quadriênio por ter informado ISSN distinto daquele que consta na base Qualis.
 
-O extrato traz informações sobre as linhas de pesquisa, a produção bibliográfica de artigos (art) e livros (liv), produção técnica (tec), orientações concluídas e em andamento (ori), e as orientações concluídas (poc), particiáção em bancas (ban), projetos de pesquisa (pro), colaboração técnica (ctc) e disciplinas ministradas no programa (dis).
+O extrato traz informações sobre as linhas de pesquisa, a produção bibliográfica de artigos (art) e livros (liv), produção técnica (tec), orientações em andamento (ori), orientações concluídas (poc), participação em bancas (ban), projetos de pesquisa (pro), colaboração técnica (ctc) e disciplinas ministradas no programa (dis).
 
 ## Operação
 
