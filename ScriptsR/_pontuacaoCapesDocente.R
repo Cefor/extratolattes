@@ -348,5 +348,8 @@ pontos_tec <- function(item, param = NULL){
   } else if(item == 14){
     # 14 - processos ou tecnicas
     list("T4", as.numeric(valor["T4"]))
+  } else if(item == 15){
+    # 15 - redes sociais, websites e blogs
+    list("T2o", as.numeric(valor["T2o"]))
   }
 }

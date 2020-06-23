@@ -19,11 +19,11 @@ ano_ini <- 2017
 ano_fim <- 2020
 
 # informar número de lattes específico para extrato individual ou NULL para todos os extratos
-id_especifico <- "5035568092503034"
-# id_especifico <- NULL 
+# id_especifico <- "5035568092503034"
+id_especifico <- NULL 
 
 # mostrar classificação geral
-fl_classificacao <- TRUE
+fl_classificacao <- FALSE
 
 # INSTITUICAO
 # incluir dentro de c() os possíveis nomes da instituição, separados por vírgula

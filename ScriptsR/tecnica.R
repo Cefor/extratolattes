@@ -118,6 +118,40 @@ tecnica <- function(id, xml_data,
   }
   
   # para todos os itens em
+  # MIDIA-SOCIAL-WEBSITE-BLOG
+  for(i in (1:length(ptec))[names(ptec) == "MIDIA-SOCIAL-WEBSITE-BLOG"]){
+    
+    ano <- as.numeric(ptec[[i]]$"DADOS-BASICOS-DA-MIDIA-SOCIAL-WEBSITE-BLOG"["ANO"])
+    
+    # flag relevancia
+    fl_rlvnc <- ptec[[i]]$"DADOS-BASICOS-DA-MIDIA-SOCIAL-WEBSITE-BLOG"['FLAG-RELEVANCIA']
+    
+    if((ano >= ano_ini & ano <= ano_fim) | fl_rlvnc=="SIM"){
+      
+      titulo <- as.vector(ptec[[i]]$"DADOS-BASICOS-DA-MIDIA-SOCIAL-WEBSITE-BLOG"["TITULO"])
+      tipo <- str_to_lower(as.vector(ptec[[i]]$"DADOS-BASICOS-DA-MIDIA-SOCIAL-WEBSITE-BLOG"["NATUREZA"]))
+
+      pontos <- pontos_tec(15)
+      if(!(ano >= ano_ini & ano <= ano_fim)){
+        pontos[[2]] <- 0
+      }
+      
+      ap <- data.frame(
+        id = id,
+        ano = ano,
+        titulo = titulo,
+        tipo = tipo,
+        estrato = pontos[[1]],
+        pontos = pontos[[2]],
+        flag_relevancia = fl_rlvnc
+      )
+      
+      producao_tec <- rbind(producao_tec, ap, row.names = NULL)
+    }
+  }
+  
+  
+  # para todos os itens em
   #`APRESENTACAO-DE-TRABALHO`
   for(i in (1:length(ptec))[names(ptec) == "APRESENTACAO-DE-TRABALHO"]){
     
@@ -183,7 +217,6 @@ tecnica <- function(id, xml_data,
     }
   }  
   
-
   # para todos os itens em
   #`ORGANIZACAO-DE-EVENTO`
   for(i in (1:length(ptec))[names(ptec) == "ORGANIZACAO-DE-EVENTO"]){

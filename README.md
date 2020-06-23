@@ -1,4 +1,4 @@
-## EXTRATO LATTES
+﻿## EXTRATO LATTES
 
 ### Autor: Fabiano Peruzzo Schwartz
 
