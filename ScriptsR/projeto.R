@@ -70,7 +70,15 @@ projeto <- function(id, xml_data,
               
               tipo <- as.vector(p[[j]]$"PROJETO-DE-PESQUISA"$".attrs"["DESCRICAO-DO-PROJETO"])
               if(!is.null(tipo)){ # se diferente de NULL, recupera a primeira linha
-                tipo <- str_split(tipo[1],"\n")[[1]][1]
+                # tipo <- str_split(tipo[1],"\n")[[1]][1]
+                tp <- NA
+                for(niv in c("GPDP", "GPII", "GPEC")){
+                  tp <- str_extract(tipo, niv)[1]
+                  if(!is.na(tp)) break
+                }
+                if(is.na(tp)){
+                  tipo <- ""
+                } else tipo <- tp
               }
               if(str_length(tipo) > 6){
                 tipo <- ""
@@ -82,7 +90,7 @@ projeto <- function(id, xml_data,
               # pontua quando for instituicao/curso definidos
               pontos <- pontos_projeto(fl_responsavel, fl_financiado, tipo)
               
-              tipo <- gsub(">", "", gsub("<", "", tipo))
+              # tipo <- gsub(">", "", gsub("<", "", tipo))
               
               ap <- data.frame(
                 id = id,

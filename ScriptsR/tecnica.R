@@ -23,7 +23,15 @@ tecnica <- function(id, xml_data,
       md_nivel <- ptec[[i]]$"INFORMACOES-ADICIONAIS"
       
       if(!is.null(md_nivel)){ # se diferente de NULL, recupera a primeira linha
-        md_nivel <- str_split(md_nivel[1],"\n")[[1]][1]
+        # md_nivel <- str_split(md_nivel[1],"\n")[[1]][1]
+        nivel <- NA
+        for(niv in c("BASICA", "SUPERIOR", "APLICADA", "APLICADAE")){
+          nivel <- str_extract(md_nivel, niv)[1]
+          if(!is.na(nivel)) break
+        }
+        if(!is.na(nivel)){
+          md_nivel <- paste0("<",nivel,">")
+        }
       }
       
       pontos <- pontos_tec(1, md_nivel)
