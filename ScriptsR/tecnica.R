@@ -273,7 +273,7 @@ tecnica <- function(id, xml_data,
       natureza <- str_trim(str_to_lower(as.vector(ptec[[i]]$"DADOS-BASICOS-DE-OUTRA-PRODUCAO-TECNICA"["NATUREZA"])))
       
       pontos <- pontos_tec(7, natureza)
-      if(ano >= ano_ini & ano <= ano_fim){
+      if(!(ano >= ano_ini & ano <= ano_fim)){
         pontos[[2]] <- 0
       }
       

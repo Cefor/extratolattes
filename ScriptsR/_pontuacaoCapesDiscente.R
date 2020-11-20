@@ -284,7 +284,7 @@ pontos_tec <- function(item, param = NULL){
     } else if(param == "base de dados restrita"){
       list("T2", as.numeric(valor["T2"]))
     } else if(param == "servico tecnico especializado"){
-      list("T2", as.numeric(valor["T1"]))
+      list("T2", as.numeric(valor["T2"]))
     } else if(param == "elaboracao de norma ou marco regulatorio"){
       list("T4", as.numeric(valor["T4"]))
     } else {

@@ -284,16 +284,16 @@ pontos_tec <- function(item, param = NULL){
     } else if(param == "base de dados restrita"){
       list("T2", as.numeric(valor["T2"]))
     } else if(param == "servico tecnico especializado"){
-      list("T2", as.numeric(valor["T1"]))
+      list("T2", as.numeric(valor["T2"]))
     } else if(param == "elaboracao de norma ou marco regulatorio"){
       list("T4", as.numeric(valor["T4"]))
     } else {
-      list("T2o", as.numeric(valor["T2o"])) # Outro tipo de produto/servico tecnico especializado
+      list("T2o", as.numeric(valor["T2o"])) # Outro tipo de produto
     }
   } else if(item == 8){
     # 8 - trabalho tecnico
     if(param[1] == "PARECER"){
-      list("T2o", as.numeric(valor["T2o"])) # outro tipo de produto/servico tecnico especializado
+      list("T2o", as.numeric(valor["T2o"])) # outro tipo de produto
     } else if(param[1] == "Parecer de artigo de revista"){
       # se for "parecer de artigo de revista", existe param[2]
       if(param[2] %in% c("A1","A2","B1")) { # "A1","A2","B1" em CP
@@ -312,13 +312,13 @@ pontos_tec <- function(item, param = NULL){
     } else if(param[1] == "Laudo tecnico"){ 
       list("T3", as.numeric(valor["T3"]))
     } else {
-      list("T2o", as.numeric(valor["T2o"])) # outro tipo de produto/servico tecnico especializado
+      list("T2o", as.numeric(valor["T2o"])) # outro tipo de produto
     }
   } else if(item == 9){ 
     # 9 - software
     if(param == "registro de software"){ 
       list("T4", as.numeric(valor["T4"]))
-    } else list("T2", as.numeric(valor["T2"])) # outro tipo de produto/servico tecnico especializado
+    } else list("T2", as.numeric(valor["T2"])) # outro tipo de produto
   } else if(item == 10){
     # 10 - artigo publicado em revista de divulgacao; artigo em jornal
     if(param[1] == "artigo em jornal"){
