@@ -43,3 +43,7 @@ Da mesma forma, os egressos podem ser convidados a atualizar o Lattes a partir d
 **ManualOperacaoExtratoLattes.pdf**: contém instruções sobre a instalação do ambiente e utilização dos scripts R.
 
 **ManualPreenchimentoLattes.pdf**: contém instruções de preenchimento do currículo Lattes de forma que a pontuação possa ser computada corretamente no extrato; as instruções são ajustadas às orientações contidas nos documentos da área de Ciência Política e Relações Internacionais.
+
+## Atualizações para o período 2021-2024
+
+Ver repositório [Extrato Lattes 2021-2024](https://github.com/Cefor/extratolattes_2021_2024)
