@@ -30,7 +30,7 @@ http://lattes.cnpq.br/5035568092503034, pode-se baixar a versão XML do respecti
 
 ## Exemplo
 
-["Extrato5035568092503034.html"](http://htmlpreview.github.com/?https://github.com/Cefor/extratolattes/blob/master/Extrato5035568092503034.html)  
+["Extrato5035568092503034.html"](http://htmlpreview.github.io/?https://github.com/Cefor/extratolattes/blob/master/Extrato5035568092503034.html)  
 
 ## Outras aplicações
 
