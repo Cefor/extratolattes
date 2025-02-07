@@ -1,4 +1,4 @@
-﻿## EXTRATO LATTES
+﻿## EXTRATO LATTES (2017-2020)
 
 ### Autor: Fabiano Peruzzo Schwartz
 Ferramenta computacional aberta, de domínio público, com número de registro BR512020002538-2 no Instituto Nacional da Propriedade Industrial.
